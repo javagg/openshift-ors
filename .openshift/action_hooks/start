@@ -79,6 +79,7 @@ metc.jms.broker.url=tcp://\${metc.ws.host}:${OPENSHIFT_ORS_ACTIVEMQ_PORT}?wireFo
 metc.jdbc.user=$user
 metc.jdbc.password=$pass
 metc.jdbc.url=jdbc:mysql://$hostport/$db?logSlowQueries=true&$query
+metc.broker.qf.store=${OPENSHIFT_ORS_RUN_DIR}/broker/qf_store
 EOF
 
 JAVA=`which java`
