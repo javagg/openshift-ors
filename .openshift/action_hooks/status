@@ -7,3 +7,10 @@ if output=$(curl http://$OPENSHIFT_ORS_IP:$OPENSHIFT_ORS_PORT 2>&1); then
 else
   client_result "Application is either stopped or inaccessible"
 fi
+
+if [ ! -z "$(ps -ef | grep ors | grep -v grep)" ]; then
+  client_result "ORS is running"
+else
+  client_result "ORS is already stopped"
+fi
+

@@ -1,7 +1,95 @@
 #!/bin/bash
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
-mkdir -p ${OPENSHIFT_ORS_DIR}log
-mkdir -p ${OPENSHIFT_ORS_DIR}run
+
+mkdir -p ${OPENSHIFT_ORS_LOG_DIR}
+mkdir -p ${OPENSHIFT_ORS_RUN_DIR}
 
 nohup ${OPENSHIFT_REPO_DIR}diy/testrubyserver.rb $OPENSHIFT_ORS_IP ${OPENSHIFT_REPO_DIR}diy > ${OPENSHIFT_ORS_DIR}log/server.log 2>&1 &
+
+#DB_URL=${DB_URL:="mysql://marketcetera:marketcetera@localhost:3306/marketcetera?param1=value1&param2=value2"}
+if [ -z "${OPENSHIFT_MYSQL_DB_URL}" ]; then
+  client_result "MYSQL must be installed"
+  exit 0
+fi
+
+DB_URL=${OPENSHIFT_MYSQL_DB_URL}${OPENSHIFT_APP_NAME}
+
+# extract the protocol
+proto=`echo $DB_URL | grep '://' | sed -e 's,^\(.*://\).*,\1,g'`
+
+# remove the protocol
+url=`echo $DB_URL | sed -e s,$proto,,g`
+
+# extract the user and password (if any)
+userpass=`echo $url | grep @ | cut -d @ -f 1`
+pass=`echo $userpass | grep : | cut -d : -f 2`
+if [ -n "$pass" ]; then
+  user=`echo $userpass | grep : | cut -d : -f 1`
+else
+  user=$userpass
+fi
+
+# extract the host
+hostport=`echo $url | sed -e s,$userpass@,,g | cut -d / -f 1`
+port=`echo $hostport | grep : | cut -d : -f 2`
+if [ -n "$port" ]; then
+  host=`echo $hostport | grep : | cut -d : -f 1`
+else
+  host=$hostport
+fi
+
+# extract the path (if any)
+path="/`echo $url | grep / | cut -d / -f 2-`"
+
+# extract the querystring (if any)
+query="`echo $path | grep ? | cut -d ? -f 2-`"
+
+# extract the dbname from path
+db="`echo $path | grep ? | cut -d ? -f 1 | cut -d / -f 2`"
+
+echo "url: $url"
+echo "  proto: $proto"
+echo "  user: $user"
+echo "  pass: $pass"
+echo "  hostport: $hostport"
+echo "  path: $path"
+echo "  query: $query"
+echo "  db: $db"
+
+LOG_DIR=${OPENSHIFT_ORS_LOG_DIR}
+RUN_DIR=${OPENSHIFT_ORS_RUN_DIR}
+PIDFILE=$RUN_DIR/ors.pid
+
+TARGET_DIR=${OPENSHIFT_REPO_DIR}/target
+CLASSPATH=$TARGET_DIR/classes/conf
+for jar in `find "$TARGET_DIR/repo" -name *.jar`; do
+  CLASSPATH=$CLASSPATH:$jar
+done
+
+# Fix ors log4j configuration inplace
+# $orsdir may contain '/' which needs to encode first
+logdir_safe=$(echo ${LOG_DIR} | sed -e 's/\//\\\//g')
+eval "sed -i -e 's/^log4j.appender.file.File=.*$/log4j.appender.file.File=$logdir_safe\/ors.log/' ${TARGET_DIR}/classes/conf/log4j/server.properties"
+
+USER_PROPERTIES_FILE=${USER_PROPERTIES_FILE:="$TARGET_DIR/classes/conf/user.properties"}
+cat > $USER_PROPERTIES_FILE << EOF
+metc.ws.host=${OPENSHIFT_ORS_HOST}
+metc.ws.port=${OPENSHIFT_ORS_WS_PORT}
+metc.jms.broker.url=tcp://\${metc.ws.host}:${OPENSHIFT_ORS_ACTIVEMQ_PORT}?wireFormat.maxInactivityDurationInitalDelay=30000
+metc.jdbc.user=$user
+metc.jdbc.password=$pass
+metc.jdbc.url=jdbc:mysql://$hostport/$db?logSlowQueries=true&$query
+EOF
+
+JAVA=`which java`
+CMD="$JAVA -classpath $CLASSPATH"
+# This argument have to be set before main class
+CMD="$CMD -Dorg.marketcetera.appDir=$TARGET_DIR/classes" 
+CMD="$CMD org.marketcetera.ors.OrderRoutingSystem" 
+CMD="$CMD $@"
+echo $CMD
+nohup $CMD > /dev/null 2>&1 &
+echo "$!" > $PIDFILE
+echo "Started ORS"
+
