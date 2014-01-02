@@ -7,7 +7,7 @@ export OPENSHIFT_ORS_PORT=8080
 export OPENSHIFT_ORS_WS_PORT=9002
 export OPENSHIFT_ORS_ACTIVEMQ_PORT=61619
 export OPENSHIFT_DATA_DIR=${HOME}
-export OPENSHIFT_MYSQL_DB_URL="mysql://marketcetera:marketcetera@localhost:3306/marketcetera?param1=value1&param2=value2"
+export OPENSHIFT_MYSQL_DB_URL="mysql://marketcetera:marketcetera@localhost:3306/"
 export OPENSHIFT_APP_NAME=testapp1
 
 function client_result {

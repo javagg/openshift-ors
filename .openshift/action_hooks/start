@@ -13,7 +13,7 @@ if [ -z "${OPENSHIFT_MYSQL_DB_URL}" ]; then
   exit 0
 fi
 
-DB_URL=${OPENSHIFT_MYSQL_DB_URL}${OPENSHIFT_APP_NAME}
+DB_URL="${OPENSHIFT_MYSQL_DB_URL}${OPENSHIFT_APP_NAME}"
 
 # extract the protocol
 proto=`echo $DB_URL | grep '://' | sed -e 's,^\(.*://\).*,\1,g'`
@@ -43,10 +43,10 @@ fi
 path="/`echo $url | grep / | cut -d / -f 2-`"
 
 # extract the querystring (if any)
-query="`echo $path | grep ? | cut -d ? -f 2-`"
+#query="`echo $path | cut -d ? -f 2-`"
 
 # extract the dbname from path
-db="`echo $path | grep ? | cut -d ? -f 1 | cut -d / -f 2`"
+db="`echo $path | cut -d ? -f 1 | cut -d / -f 2`"
 
 echo "url: $url"
 echo "  proto: $proto"
@@ -54,7 +54,6 @@ echo "  user: $user"
 echo "  pass: $pass"
 echo "  hostport: $hostport"
 echo "  path: $path"
-echo "  query: $query"
 echo "  db: $db"
 
 LOG_DIR=${OPENSHIFT_ORS_LOG_DIR}
@@ -88,7 +87,7 @@ CMD="$JAVA -classpath $CLASSPATH"
 CMD="$CMD -Dorg.marketcetera.appDir=$TARGET_DIR/classes" 
 CMD="$CMD org.marketcetera.ors.OrderRoutingSystem" 
 CMD="$CMD $@"
-echo $CMD
+#echo $CMD
 nohup $CMD > /dev/null 2>&1 &
 echo "$!" > $PIDFILE
 echo "Started ORS"
