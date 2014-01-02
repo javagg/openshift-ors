@@ -8,9 +8,11 @@ else
   client_result "Application is either stopped or inaccessible"
 fi
 
+if false; then
 if [ ! -z "$(ps -ef | grep ors | grep -v grep)" ]; then
   client_result "ORS is running"
 else
   client_result "ORS is already stopped"
+fi
 fi
 
