@@ -2,4 +2,7 @@
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
 
-echo "build..."
+pushd $OPENSHIFT_REPO_DIR > /dev/null
+mvn --global-settings ${OPENSHIFT_REPO_DIR}settings.xml --version
+mvn --global-settings ${OPENSHIFT_REPO_DIR}settings.xml clean package -DskipTests
+popd > /dev/null
