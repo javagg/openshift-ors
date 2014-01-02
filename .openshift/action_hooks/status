@@ -13,5 +13,5 @@ fi
 if isrunning; then
   client_result "ORS is running"
 else
-  client_result "ORS is already stopped"
+  client_result "ORS is stopped"
 fi

@@ -59,7 +59,6 @@ echo "  db: $db"
 
 LOG_DIR=${OPENSHIFT_ORS_LOG_DIR}
 RUN_DIR=${OPENSHIFT_ORS_RUN_DIR}
-#PIDFILE=${OPENSHIFT_ORS_RUN_DIR}/ors.pid
 
 TARGET_DIR=${OPENSHIFT_REPO_DIR}/target
 CLASSPATH=$TARGET_DIR/classes/conf
@@ -74,7 +73,7 @@ eval "sed -i -e 's/^log4j.appender.file.File=.*$/log4j.appender.file.File=$logdi
 
 USER_PROPERTIES_FILE=${USER_PROPERTIES_FILE:="$TARGET_DIR/classes/conf/user.properties"}
 cat > $USER_PROPERTIES_FILE << EOF
-metc.ws.host=${OPENSHIFT_ORS_HOST}
+metc.ws.host=${OPENSHIFT_ORS_IP}
 metc.ws.port=${OPENSHIFT_ORS_WS_PORT}
 metc.jms.broker.url=tcp://\${metc.ws.host}:${OPENSHIFT_ORS_ACTIVEMQ_PORT}?wireFormat.maxInactivityDurationInitalDelay=30000
 metc.jdbc.user=$user
