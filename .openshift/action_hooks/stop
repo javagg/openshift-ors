@@ -1,6 +1,8 @@
 #!/bin/bash
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
+ME="$(cd `dirname $BASH_SOURCE` && pwd)"
+source $ME/_utils
 
 if [ -z "$(ps -ef | grep testrubyserver.rb | grep -v grep)" ]; then
   client_result "Application is already stopped"
@@ -8,8 +10,15 @@ else
   kill `ps -ef | grep testrubyserver.rb | grep -v grep | awk '{ print $2 }'` > /dev/null 2>&1
 fi
 
-if [ -z "$(ps -ef | grep ors | grep -v grep)" ]; then
-  client_result "ORS is already stopped"
+if isrunning; then
+  if [ -f "$PIDFILE" ]; then
+    pid=$(cat $PIDFILE);
+    killtree $pid
+  else
+    client_result "Failed to locate ORS PID File" 1>&2
+  fi
 else
-  kill `ps -ef | grep ors | grep -v grep | awk '{ print $2 }'` > /dev/null 2>&1
+  client_result "ORS is already stopped"
 fi
+
+rm -f $PIDFILE

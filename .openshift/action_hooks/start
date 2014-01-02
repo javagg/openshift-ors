@@ -1,6 +1,8 @@
 #!/bin/bash
 
 source $OPENSHIFT_CARTRIDGE_SDK_BASH
+ME="$(cd `dirname $BASH_SOURCE` && pwd)"
+source $ME/_utils
 
 mkdir -p ${OPENSHIFT_ORS_LOG_DIR}
 mkdir -p ${OPENSHIFT_ORS_RUN_DIR}
@@ -57,7 +59,7 @@ echo "  db: $db"
 
 LOG_DIR=${OPENSHIFT_ORS_LOG_DIR}
 RUN_DIR=${OPENSHIFT_ORS_RUN_DIR}
-PIDFILE=$RUN_DIR/ors.pid
+#PIDFILE=${OPENSHIFT_ORS_RUN_DIR}/ors.pid
 
 TARGET_DIR=${OPENSHIFT_REPO_DIR}/target
 CLASSPATH=$TARGET_DIR/classes/conf
@@ -86,7 +88,10 @@ CMD="$JAVA -classpath $CLASSPATH"
 CMD="$CMD -Dorg.marketcetera.appDir=$TARGET_DIR/classes" 
 CMD="$CMD org.marketcetera.ors.OrderRoutingSystem" 
 CMD="$CMD $@"
-#echo $CMD
-nohup $CMD > /dev/null 2>&1 &
-echo "$!" > $PIDFILE
-echo "Started ORS"
+
+if ! isrunning; then
+  nohup $CMD > /dev/null 2>&1 &
+  echo "$!" > $PIDFILE
+else
+  client_result "ORS is already running"
+fi
