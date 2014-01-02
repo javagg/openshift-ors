@@ -8,10 +8,8 @@ else
   kill `ps -ef | grep testrubyserver.rb | grep -v grep | awk '{ print $2 }'` > /dev/null 2>&1
 fi
 
-if false; then
 if [ -z "$(ps -ef | grep ors | grep -v grep)" ]; then
   client_result "ORS is already stopped"
 else
   kill `ps -ef | grep ors | grep -v grep | awk '{ print $2 }'` > /dev/null 2>&1
-fi
 fi

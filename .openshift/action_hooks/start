@@ -7,8 +7,6 @@ mkdir -p ${OPENSHIFT_ORS_RUN_DIR}
 
 nohup ${OPENSHIFT_REPO_DIR}diy/testrubyserver.rb $OPENSHIFT_ORS_IP ${OPENSHIFT_REPO_DIR}diy > ${OPENSHIFT_ORS_DIR}log/server.log 2>&1 &
 
-if false; then
-#DB_URL=${DB_URL:="mysql://marketcetera:marketcetera@localhost:3306/marketcetera?param1=value1&param2=value2"}
 if [ -z "${OPENSHIFT_MYSQL_DB_URL}" ]; then
   client_result "MYSQL must be installed"
   exit 0
@@ -92,5 +90,3 @@ CMD="$CMD $@"
 nohup $CMD > /dev/null 2>&1 &
 echo "$!" > $PIDFILE
 echo "Started ORS"
-
-fi
