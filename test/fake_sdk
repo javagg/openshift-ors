@@ -2,13 +2,13 @@ export OPENSHIFT_REPO_DIR="$(cd `dirname $BASH_SOURCE`/../ && pwd)/"
 export OPENSHIFT_ORS_DIR="$(cd `dirname $BASH_SOURCE`/../ && pwd)/"
 export OPENSHIFT_ORS_LOG_DIR=${OPENSHIFT_ORS_DIR}log
 export OPENSHIFT_ORS_RUN_DIR=${OPENSHIFT_ORS_DIR}run
-export OPENSHIFT_ORS_IP=localhost
+export OPENSHIFT_ORS_IP=127.211.77.14
 export OPENSHIFT_ORS_PORT=8080
 export OPENSHIFT_ORS_WS_PORT=9002
 export OPENSHIFT_ORS_ACTIVEMQ_PORT=61619
 export OPENSHIFT_DATA_DIR=${HOME}
 export OPENSHIFT_MYSQL_DB_URL="mysql://marketcetera:marketcetera@localhost:3306/"
-export OPENSHIFT_APP_NAME=testapp1
+export OPENSHIFT_APP_NAME=marketcetera
 
 function client_result {
   echo "$@"

@@ -1,3 +1,7 @@
-The OpenShift `diy` cartridge documentation can be found at:
+The ORS `diy` cartridge
 
-https://github.com/openshift/origin-server/tree/master/cartridges/openshift-origin-cartridge-diy/README.md
+==Testing
+
+OPENSHIFT_CARTRIDGE_SDK_BASH=test/fake_sdk .openshift/action_hooks/{build,status,start,stop}
+
+
